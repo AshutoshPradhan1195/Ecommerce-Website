@@ -17,9 +17,11 @@ import model.User;
 import resources.myConstants;
 
 @WebServlet(asyncSupported=true, urlPatterns={"/signInServlet"})
-@MultipartConfig(fileSizeThreshold=0x200000, maxFileSize=0xA00000L, maxRequestSize=0x3200000L)
-public class SignInServlet
-extends HttpServlet {
+@MultipartConfig(fileSizeThreshold=1024 * 1024 * 2, 
+maxFileSize=1024 * 1024 * 10, 
+maxRequestSize=1024 * 1024 * 10)
+public class SignInServlet extends HttpServlet {
+	
     private static final long serialVersionUID = 1L;
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -33,18 +35,24 @@ extends HttpServlet {
         String userCCN = request.getParameter("userCCN");
         String userBirth = request.getParameter("userBirth");
         Part userImg = request.getPart("userImg");
+        
         User user = new User(fName, lName, userAdd, email, userImg, userCCN, userBirth, contactNo);
         String savePath = myConstants.IMAGE_DIR_SAVE_PATH;
         String fileName = user.getImageUrlFromPart();
         if (!fileName.isEmpty() && fileName != null) {
-            userImg.write(String.valueOf(savePath) + fileName);
+            userImg.write(savePath + fileName);
         }
-        if ((con = new DBConnection()).isUserRegistered(email).booleanValue()) {
+        
+        if ((con = new DBConnection()).isUserRegistered(email)) {
+        	con.enterLoginInfo(email, password);
+        	con.registerNewUser(user);
             response.sendRedirect(String.valueOf(request.getContextPath()) + "/pages/login.jsp");
+
         } else {
-            request.setAttribute("errorMessage", (Object)"User Email already exists");
+			request.setAttribute("errorMessage", "User Email already exists");
             RequestDispatcher dispatcher = request.getRequestDispatcher("/pages/signIn.jsp");
             dispatcher.forward((ServletRequest)request, (ServletResponse)response);
+
         }
     }
 }

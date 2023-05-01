@@ -14,5 +14,9 @@ public class myConstants {
     public static final String Insert_Into_Customer = "INSERT INTO customers(customerFname,customerLname, customer_email, customer_contact, delivery_address, cc_number, customer_birthDate,image_link) VALUES(?,?,?,?,?,?,?,? )";
     public static final String Insert_Into_Login_Info = "INSERT INTO login_info(user_email, user_pass) VALUES (?,?)";
     public static final String IMAGE_DIR = "xampp\\tomcat\\webapps\\images\\";
-    public static final String IMAGE_DIR_SAVE_PATH = "C:" + File.separator + "xampp\\tomcat\\webapps\\images\\";
+    public static final String IMAGE_DIR_SAVE_PATH = "C:" + File.separator + IMAGE_DIR;
+    public static final String PRODUCT_IMAGE_DIR = "xampp\\tomcat\\webapps\\images\\products\\";
+    public static final String PRODUCTS_IMAGE_DIR_SAVE_PATH = "C:" + File.separator + PRODUCT_IMAGE_DIR;
+
+    
 }

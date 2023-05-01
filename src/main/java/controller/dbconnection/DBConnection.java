@@ -7,6 +7,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import model.PasswordEncryption;
 import model.User;
+import resources.myConstants;
 
 public class DBConnection {
     public static Connection getConnection() {
@@ -39,13 +40,13 @@ public class DBConnection {
         return null;
     }
 
-    public Boolean enterEcryptPassword(String email, String password) {
+    public Boolean enterLoginInfo(String email, String password) {
         Connection con = DBConnection.getConnection();
         if (con != null) {
             try {
-                PreparedStatement statement1 = con.prepareStatement("INSERT INTO login_info(user_email, user_pass) VALUES (?,?)");
+                PreparedStatement statement1 = con.prepareStatement(myConstants.Insert_Into_Login_Info);
                 statement1.setString(1, email);
-                statement1.setString(2, PasswordEncryption.encrypt((String)email, (String)password));
+                statement1.setString(2, PasswordEncryption.encrypt(email, password));
                 int result = statement1.executeUpdate();
                 if (result == 0) {
                     return false;
@@ -62,11 +63,11 @@ public class DBConnection {
         return null;
     }
 
-    public Boolean registerNewUser(String query, User user) {
+    public Boolean registerNewUser(User user) {
         Connection con = DBConnection.getConnection();
         if (con != null) {
             try {
-                PreparedStatement statement = con.prepareStatement("INSERT INTO customers(customerFname,customerLname, customer_email, customer_contact, delivery_address, cc_number, customer_birthDate,image_link) VALUES(?,?,?,?,?,?,?,? )");
+                PreparedStatement statement = con.prepareStatement(myConstants.Insert_Into_Customer);
                 statement.setString(1, user.getFirstName());
                 statement.setString(2, user.getLastName());
                 statement.setString(3, user.getEmail());

@@ -34,7 +34,7 @@ implements Filter {
         this.context.log("Requested resource" + uri);
         HttpSession session = req.getSession(false);
         boolean loggedIn = session != null && session.getAttribute("user") != null;
-        if (!(loggedIn || isLoginJsp || isLoginServlet || isSignJsp || isSignInServlet || uri.contains("css") )) {
+        if (!(loggedIn || isLoginJsp || isLoginServlet || isSignJsp || isSignInServlet || uri.contains("css") || uri.contains("img") )) {
             res.sendRedirect(String.valueOf(req.getContextPath()) + "/pages/login.jsp");
         } else if (loggedIn && isSignJsp && !isLogoutServlet) {
             res.sendRedirect(String.valueOf(req.getContextPath()) + "/pages/home.jsp");
