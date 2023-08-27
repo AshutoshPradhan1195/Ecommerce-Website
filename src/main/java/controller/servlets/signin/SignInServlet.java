@@ -1,4 +1,3 @@
-
 package controller.servlets.signin;
 
 import controller.dbconnection.DBConnection;
@@ -25,7 +24,7 @@ public class SignInServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        DBConnection con;
+        DBConnection con= new DBConnection();
         String fName = request.getParameter("userFName");
         String lName = request.getParameter("userLName");
         String email = request.getParameter("userEmail");
@@ -36,15 +35,14 @@ public class SignInServlet extends HttpServlet {
         String userBirth = request.getParameter("userBirth");
         Part userImg = request.getPart("userImg");
         
-        User user = new User(fName, lName, userAdd, email, userImg, userCCN, userBirth, contactNo);
+        User user = new User(fName, lName, userAdd, email, password, userImg, userCCN, userBirth, contactNo);
         String savePath = myConstants.IMAGE_DIR_SAVE_PATH;
         String fileName = user.getImageUrlFromPart();
         if (!fileName.isEmpty() && fileName != null) {
             userImg.write(savePath + fileName);
         }
         
-        if ((con = new DBConnection()).isUserRegistered(email)) {
-        	con.enterLoginInfo(email, password);
+        if (con.isUserRegistered(email)) {
         	con.registerNewUser(user);
             response.sendRedirect(String.valueOf(request.getContextPath()) + "/pages/login.jsp");
 

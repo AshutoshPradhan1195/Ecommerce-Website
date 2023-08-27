@@ -1,4 +1,3 @@
-
 package controller.filters.login;
 
 import java.io.IOException;
@@ -13,6 +12,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import controller.dbconnection.DBConnection;
+
 public class AuthenticationFilter
 implements Filter {
     private ServletContext context;
@@ -26,21 +27,35 @@ implements Filter {
         HttpServletRequest req = (HttpServletRequest)request;
         HttpServletResponse res = (HttpServletResponse)response;
         String uri = req.getRequestURI();
+        DBConnection con = new DBConnection();
+        
         boolean isLoginJsp = uri.endsWith("login.jsp");
         boolean isLoginServlet = uri.endsWith("loginServlet");
         boolean isLogoutServlet = uri.endsWith("logoutServlet");
-        boolean isSignJsp = uri.endsWith("signIn.jsp");
+        boolean isSignJsp = uri.endsWith("signin.jsp");
         boolean isSignInServlet = uri.endsWith("signInServlet");
+        boolean isCartJsp = uri.endsWith("cart.jsp");
+        boolean isAdminJsp = uri.endsWith("admin.jsp");
+        boolean isLoggedInAdmin = false;
         this.context.log("Requested resource" + uri);
         HttpSession session = req.getSession(false);
+
         boolean loggedIn = session != null && session.getAttribute("user") != null;
-        if (!(loggedIn || isLoginJsp || isLoginServlet || isSignJsp || isSignInServlet || uri.contains("css") || uri.contains("img") )) {
+        if(loggedIn) {
+        	String userEmail = String.valueOf(session.getAttribute("user"))+"@gmail.com";
+        	isLoggedInAdmin = con.getUserRole(userEmail);
+        }
+        if ((loggedIn && isSignJsp && !isLogoutServlet) && (!uri.contains("css") && uri.contains("img"))) {
+            res.sendRedirect(String.valueOf(req.getContextPath()) + "/pages/home.jsp");
+        } else if (loggedIn && isLoginJsp && !isSignJsp){
+            res.sendRedirect(String.valueOf(req.getContextPath()) + "/pages/home.jsp");
+        } else if (!loggedIn && isCartJsp) {
             res.sendRedirect(String.valueOf(req.getContextPath()) + "/pages/login.jsp");
-        } else if (loggedIn && isSignJsp && !isLogoutServlet) {
+        
+        }else if(!isLoggedInAdmin && isAdminJsp) {
             res.sendRedirect(String.valueOf(req.getContextPath()) + "/pages/home.jsp");
-        } else if (loggedIn && isLoginJsp && !isSignJsp) {
-            res.sendRedirect(String.valueOf(req.getContextPath()) + "/pages/home.jsp");
-        } else {
+        }
+        else {
             chain.doFilter(request, response);
         }
     }

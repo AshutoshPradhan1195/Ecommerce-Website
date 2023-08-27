@@ -1,5 +1,13 @@
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
     pageEncoding="ISO-8859-1"%>
+    <%@ page import="controller.dbconnection.DBConnection" %>
+<%@ page import="resources.myConstants" %>
+<%@ taglib uri = "http://java.sun.com/jsp/jstl/core" prefix = "c" %> <!-- adding core tag library -->
+<%@ taglib uri = "http://java.sun.com/jsp/jstl/fmt" prefix = "fmt" %> <!-- adding formatting tag library -->
+<%@ taglib uri = "http://java.sun.com/jsp/jstl/sql" prefix = "sql" %> <!-- adding sql tag library -->
+<%@ taglib uri = "http://java.sun.com/jsp/jstl/functions" prefix = "fn" %> <!-- adding core tag library -->
+<sql:setDataSource var="dbConnection" driver ="com.mysql.jdbc.Driver" url ="jdbc:mysql://localhost:3306/empyrean" user="root" password = ""/>
+    
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -14,21 +22,22 @@
 
     
 </head>
-<%
-	String user = (String) session.getAttribute("user");
-	String userName = null;
-	String sessionId = null;
-	
-	Cookie[] cookies = request.getCookies();
-	if(cookies != null){
-		for (Cookie cookie : cookies){
-			if(cookie.getName().equals("user")) userName = cookie.getValue();
-			if(cookie.getName().equals("JSESSIONID")) sessionId = cookie.getValue();
 
-		}
-	}
+	<c:set var = "isAdmin" value = "false"/>
+	<c:if test="${sessionScope.user != null}">
+			<c:set var = "userEmail" scope = "session" value ="${sessionScope.user}@gmail.com"/>
+	   			<sql:query var="userRole" dataSource="${dbConnection}">
+					SELECT user_role FROM users WHERE user_email = ?
+				<sql:param value="${userEmail}"/>
+				</sql:query>
+		<c:forEach var="userRole" items="${userRole.rows}">
+			<c:if test="${userRole.user_role == 0 }">
+				<c:set var = "isAdmin" value = "true"/>
+			</c:if>
+		</c:forEach>
+		
+	</c:if>
 	
-	%>
 
 <body>
     
@@ -39,24 +48,34 @@
         </div>
 
         <div class="menu">
-            <a href = "#" style="color: red;" >HOME</a>
+            <a href = "${pageContext.request.contextPath}/pages/home.jsp" style="color: red;" >HOME</a>
             
             <a href = "${pageContext.request.contextPath}/pages/product.jsp">PRODUCTS</a>
             
-            <a href = "about.jsp">ABOUT</a>
+            <a href = "${pageContext.request.contextPath}/pages/about.jsp">ABOUT</a>
             
-            <a href = "contact.jsp">CONTACT</a>
+            <a href = "${pageContext.request.contextPath}/pages/contact.jsp">CONTACT</a>
             
-            <a href = "profile.jsp">PROFILE</a>
+			
+			<div style="display:${isAdmin ? 'none' : 'block'}">
+	            <a href = "${pageContext.request.contextPath}/pages/profile.jsp">PROFILE</a>
+			</div>
+			            
+            <div style="display:${isAdmin ? 'block' : 'none'}">
+	            <a href ="${pageContext.request.contextPath}/pages/admin.jsp">ADMIN</a>
+            </div>
+            
+            <a href = "${pageContext.request.contextPath}/pages/cart.jsp" class="cart"><i class="fa fa-shopping-cart"></i></a>
+			
 
-            <a href = "cart.jsp" class="cart"><i class="fa fa-shopping-cart"></i></a>
 
 
         </div>
         
     </nav>
+   
     
-    <div class = "upperSection">
+    <div class = "upperSection" style=margin-bottom:50px;>
         <div class= "tagLine">
             <h1>Rejoice in this heavenly bliss</h1>
             <h3>You seek, We deliver.</h3>
@@ -64,11 +83,6 @@
         </div>
     </div>
     
-      <div style= "text-align: center">
-	  	Hi <%= userName %>, Login successful. Your session ID =<%=sessionId %> User = <%= user %> 
-	  	<form action ="${pageContext.request.contextPath}/logoutServlet" method="post">
-			<input type="submit" value="Logout">
-		</form>
 	  </div>
   
     <div class="gridContainer">
@@ -158,7 +172,7 @@
 
 <script>
     const redirectToProducts = () => {
-        window.location.href = "LOGO.png";
+        window.location.href = "product.jsp";
     }
     
     const refresh = () => {

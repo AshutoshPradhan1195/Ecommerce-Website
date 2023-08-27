@@ -8,12 +8,14 @@ public class User {
     String firstName;
     String lastName;
     String email;
+    String password;
     String userAdd;
     String role;
     String imageUrlFromPart;
     String userCCN;
     String userBirth;
     String userContact;
+    
 
     public String getUserAdd() {
         return this.userAdd;
@@ -26,11 +28,12 @@ public class User {
     public User() {
     }
 
-    public User(String firstName, String lastName, String userAdd, String email, Part part, String userCCN, String userBirth, String userContact) {
+    public User(String firstName, String lastName, String userAdd, String email,String password, Part part, String userCCN, String userBirth, String userContact) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.userAdd = userAdd;
         this.email = email;
+        this.password = password;
         this.imageUrlFromPart = this.getImageUrl(part);
         this.userCCN = userCCN;
         this.userBirth = userBirth;
@@ -54,7 +57,7 @@ public class User {
             imageUrlFromPart = s.substring(s.indexOf("=") + 2, s.length() - 1);
         }
         if (imageUrlFromPart == null || imageUrlFromPart.isEmpty()) {
-            imageUrlFromPart = "download.jpg";
+            imageUrlFromPart = "img.jpg";
         }
         return imageUrlFromPart;
     }
@@ -66,7 +69,11 @@ public class User {
     public void setUserCCN(String userCCN) {
         this.userCCN = userCCN;
     }
-
+    
+    public void setPassword(String password) {
+    	this.password = password;
+    }
+    
     public String getUserBirth() {
         return this.userBirth;
     }
@@ -78,7 +85,7 @@ public class User {
     public String getUserContact() {
         return this.userContact;
     }
-
+    
     public void setUserContact(String userContact) {
         this.userContact = userContact;
     }
@@ -98,6 +105,7 @@ public class User {
     public String getLastName() {
         return this.lastName;
     }
+ 
 
     public void setLastName(String lastName) {
         this.lastName = lastName;
@@ -107,6 +115,9 @@ public class User {
         return this.email;
     }
 
+    public String getPassword() {
+    	return this.password;
+    }
     public void setEmail(String email) {
         this.email = email;
     }
